@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pinout-cli"
+version = "1.2.0"
+description = "A terminal pinout lookup tool with centralized database syncing"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[project.scripts]
+pinout = "pinout:main"
+
+[tool.setuptools]
+py-modules = ["pinout"]
