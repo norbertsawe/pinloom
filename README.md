@@ -14,7 +14,7 @@ No more waiting for bloated 80-page manufacturer datasheets to download just to 
 Clone this repository and run the automated installation script:
 
 ```bash
-git clone [https://github.com/ceenorby/pinout-cli.git](https://github.com/ceenorby/pinout-cli.git)
+git clone [https://github.com/norbertsawe/pinout-cli.git](https://github.com/norbertsawe/pinout-cli.git)
 cd pinout-cli
 chmod +x setup.sh
 ./setup.sh
