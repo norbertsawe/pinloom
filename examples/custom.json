@@ -1,0 +1,21 @@
+{
+  "my-sensor": {
+    "schema_version": 2,
+    "name": "Example I2C sensor header",
+    "description": "Example custom board definition; adapt this to your actual hardware.",
+    "category": "custom",
+    "package": "1x4 header",
+    "aliases": ["lab-sensor"],
+    "voltage": "3.3 V",
+    "electrical": {"Logic": "3.3 V only"},
+    "notes": ["Example connector order; confirm your own board schematic."],
+    "sources": ["Local board schematic"],
+    "layout": {"type": "table", "orientation": "Board silkscreen numbering, left to right."},
+    "pins": [
+      {"number": "1", "name": "VCC", "kind": "power", "description": "Supply input.", "voltage": "3.3 V"},
+      {"number": "2", "name": "GND", "kind": "ground", "description": "Ground return.", "voltage": "0 V"},
+      {"number": "3", "name": "SDA", "kind": "communication", "description": "Bidirectional data.", "functions": ["I2C SDA"], "notes": ["Pull up to 3.3 V."]},
+      {"number": "4", "name": "SCL", "kind": "communication", "description": "Clock input.", "functions": ["I2C SCL"], "notes": ["Pull up to 3.3 V."]}
+    ]
+  }
+}
