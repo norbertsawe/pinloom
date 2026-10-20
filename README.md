@@ -30,6 +30,9 @@ cd pinout-cli
 ```sh
 bash setup.sh
 ./.venv/bin/pinout pico -d
+```
+Adding it  to path(i.e if you are using zsh)
+```
 echo 'export PATH="$PATH:'"$(pwd)/.venv/bin"'"' >> ~/.zshrc  
 ```
 
