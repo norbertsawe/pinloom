@@ -30,6 +30,7 @@ cd pinout-cli
 ```sh
 bash setup.sh
 ./.venv/bin/pinout pico -d
+echo 'export PATH="$PATH:'"$(pwd)/.venv/bin"'"' >> ~/.zshrc  
 ```
 
 **Windows PowerShell**
