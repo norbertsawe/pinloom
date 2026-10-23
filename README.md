@@ -1,6 +1,6 @@
 # Pinloom
 
-Look up chip, board, and connector pinouts directly from your terminal. Pinloom includes
+Look up chip, board, and connector pinouts directly from your terminal(pretty awesome right :)). Pinloom includes
 **2,088 components and 39,934 pins**, plus package sketches, electrical notes,
 and pin functions where available. After installation, lookups work offline.
 
