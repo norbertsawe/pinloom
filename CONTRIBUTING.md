@@ -25,7 +25,7 @@ Catalog changes belong in `pinout-pages/database`; see [the data guide](docs/dat
 Validate and sync them into this repository before building a release:
 
 ```sh
-pinout --validate ../pinout-pages/database
+pinloom --validate ../pinout-pages/database
 python tools/sync_database.py ../pinout-pages/database
 ```
 

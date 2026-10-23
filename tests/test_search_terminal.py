@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pinout_cli import paths, terminal
-from pinout_cli.search import choose, search
+from pinloom import paths, terminal
+from pinloom.search import choose, search
 
 
 def test_fuzzy_and_partial_search(db):
@@ -66,7 +66,7 @@ def test_width_is_refreshed_after_resize(monkeypatch):
 
 @pytest.mark.parametrize("platform", ["windows", "linux", "macos"])
 def test_platform_config_locations(monkeypatch, tmp_path, platform):
-    for name in ("PINOUT_CONFIG_DIR", "PINOUT_DATA_DIR"):
+    for name in ("PINLOOM_CONFIG_DIR", "PINLOOM_DATA_DIR", "PINOUT_CONFIG_DIR", "PINOUT_DATA_DIR"):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("APPDATA", str(tmp_path / "roaming"))
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "local"))
@@ -80,18 +80,51 @@ def test_platform_config_locations(monkeypatch, tmp_path, platform):
         with patch.object(paths, "Path", type(tmp_path)):
             config, data = paths.config_dir(), paths.data_dir()
     if platform == "windows":
-        assert config == tmp_path / "roaming/pinout"
-        assert data == tmp_path / "local/pinout"
+        assert config == tmp_path / "roaming/pinloom"
+        assert data == tmp_path / "local/pinloom"
     elif platform == "linux":
-        assert config == tmp_path / "xdg-config/pinout"
-        assert data == tmp_path / "xdg-data/pinout"
+        assert config == tmp_path / "xdg-config/pinloom"
+        assert data == tmp_path / "xdg-data/pinloom"
     else:
-        assert config == Path.home() / "Library/Application Support/pinout"
+        assert config == Path.home() / "Library/Application Support/pinloom"
         assert data == config / "data"
 
 
 def test_environment_location_overrides(monkeypatch, tmp_path):
-    monkeypatch.setenv("PINOUT_CONFIG_DIR", str(tmp_path / "config"))
-    monkeypatch.setenv("PINOUT_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("PINLOOM_CONFIG_DIR", str(tmp_path / "config"))
+    monkeypatch.setenv("PINLOOM_DATA_DIR", str(tmp_path / "data"))
     assert paths.config_dir() == tmp_path / "config"
     assert paths.data_dir() == tmp_path / "data"
+
+
+def test_rename_keeps_legacy_paths_until_new_paths_exist(tmp_path, monkeypatch):
+    for name in ("PINLOOM_CONFIG_DIR", "PINLOOM_DATA_DIR", "PINOUT_CONFIG_DIR", "PINOUT_DATA_DIR"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data"))
+    old_config = tmp_path / "config" / "pinout"
+    old_data = tmp_path / "data" / "pinout"
+    old_config.mkdir(parents=True)
+    old_data.mkdir(parents=True)
+    with patch.object(paths.sys, "platform", "linux"), patch.object(paths.os, "name", "posix"):
+        assert paths.config_dir() == old_config
+        assert paths.data_dir() == old_data
+        new_config = tmp_path / "config" / "pinloom"
+        new_data = tmp_path / "data" / "pinloom"
+        new_config.mkdir()
+        new_data.mkdir()
+        assert paths.config_dir() == new_config
+        assert paths.data_dir() == new_data
+
+
+def test_new_environment_names_take_precedence_over_legacy(tmp_path, monkeypatch):
+    monkeypatch.setenv("PINOUT_CONFIG_DIR", str(tmp_path / "old-config"))
+    monkeypatch.setenv("PINOUT_DATA_DIR", str(tmp_path / "old-data"))
+    monkeypatch.delenv("PINLOOM_CONFIG_DIR", raising=False)
+    monkeypatch.delenv("PINLOOM_DATA_DIR", raising=False)
+    assert paths.config_dir() == tmp_path / "old-config"
+    assert paths.data_dir() == tmp_path / "old-data"
+    monkeypatch.setenv("PINLOOM_CONFIG_DIR", str(tmp_path / "new-config"))
+    monkeypatch.setenv("PINLOOM_DATA_DIR", str(tmp_path / "new-data"))
+    assert paths.config_dir() == tmp_path / "new-config"
+    assert paths.data_dir() == tmp_path / "new-data"

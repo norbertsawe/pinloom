@@ -6,6 +6,7 @@ import tarfile
 import urllib.request
 from pathlib import Path, PurePosixPath
 
+from . import __version__
 from .database import MAX_FILE_BYTES, Database, decode
 from .export import atomic_write
 from .models import DefinitionError
@@ -58,7 +59,7 @@ def parse_archive(payload: bytes) -> dict:
 
 
 def update_database(directory: Path) -> int:
-    request = urllib.request.Request(REMOTE_URL, headers={"User-Agent": "pinout-cli/2.0"})
+    request = urllib.request.Request(REMOTE_URL, headers={"User-Agent": f"Pinloom/{__version__}"})
     with urllib.request.urlopen(request, timeout=30) as response:
         payload = response.read(MAX_ARCHIVE_BYTES + 1)
     if len(payload) > MAX_ARCHIVE_BYTES:

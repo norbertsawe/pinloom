@@ -23,7 +23,7 @@ from .update import update_database
 
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="pinout", description="Offline electronic component pinouts with fuzzy search."
+        prog="pinloom", description="Offline electronic component pinouts with fuzzy search."
     )
     p.add_argument("component", nargs="?", help="component ID, alias or partial name")
     p.add_argument(
@@ -59,6 +59,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--color", choices=("auto", "always", "never"), default="auto")
     p.add_argument("--no-color", dest="color", action="store_const", const="never")
     p.add_argument("--ascii", action="store_true", help="use ASCII instead of Unicode borders")
+    p.add_argument("--no-art", action="store_true", help="hide the illustrative package sketch")
     p.add_argument("--width", type=int, help="override terminal width (12-1000 columns)")
     p.add_argument(
         "--config-dir", type=Path, help="directory containing components/ custom definitions"
@@ -72,7 +73,7 @@ def parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="extra JSON/YAML file or directory",
     )
-    p.add_argument("-V", "--version", action="version", version=f"pinout-cli {__version__}")
+    p.add_argument("-V", "--version", action="version", version=f"Pinloom {__version__}")
     return p
 
 
@@ -95,7 +96,7 @@ def run(argv=None) -> int:
         args.component = None
     if args.about:
         print(
-            f"pinout-cli {__version__}\nOffline hardware pinout reference\nConfig: {config}\nCache: {data}\nDatabase: https://github.com/norbertsawe/pinout-pages"
+            f"Pinloom {__version__}\nOffline hardware pinout reference\nConfig: {config}\nCache: {data}\nDatabase: https://github.com/norbertsawe/pinout-pages"
         )
         return 0
     if args.update:
@@ -223,7 +224,14 @@ def run(argv=None) -> int:
         else "text"
     )
     if args.export or format != "text":
-        output = serialize(component, format, details=args.details, width=width, pins=selected)
+        output = serialize(
+            component,
+            format,
+            details=args.details,
+            width=width,
+            pins=selected,
+            show_appearance=not args.no_art,
+        )
         if args.export:
             atomic_write(args.export.expanduser(), output)
             print(f"Exported {component.id} to {args.export}", file=sys.stderr)
@@ -238,6 +246,7 @@ def run(argv=None) -> int:
                 unicode=not args.ascii and terminal.unicode_enabled(sys.stdout),
                 details=args.details,
                 pins=selected,
+                show_appearance=not args.no_art,
             )
         )
     return 0
@@ -265,5 +274,5 @@ def main(argv=None) -> int:
         EOFError,
         zlib.error,
     ) as exc:
-        print(f"pinout: {clean(str(exc))}", file=sys.stderr)
+        print(f"pinloom: {clean(str(exc))}", file=sys.stderr)
         return 2

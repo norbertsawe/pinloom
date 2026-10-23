@@ -32,7 +32,7 @@ def catalog_view(components, *, total, offset=0, width=80, color=False):
             width,
         )
     lines += wrapped("Browse: --categories | --category NAME | --search QUERY", width)
-    lines += wrapped("Inspect: pinout COMPONENT -d | pinout COMPONENT --pin NUMBER", width)
+    lines += wrapped("Inspect: pinloom COMPONENT -d | pinloom COMPONENT --pin NUMBER", width)
     return "\n".join(lines) + "\n"
 
 
@@ -44,5 +44,7 @@ def category_view(components, width=80):
     lines.append("-" * min(width, 64))
     for category, count in sorted(counts.items()):
         lines += wrapped(f"{category:24} {count:5,}", width)
-    lines += [""] + wrapped("Browse a category: pinout --list --category sensors --limit 20", width)
+    lines += [""] + wrapped(
+        "Browse a category: pinloom --list --category sensors --limit 20", width
+    )
     return "\n".join(lines) + "\n"

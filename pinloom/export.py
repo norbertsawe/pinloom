@@ -13,7 +13,9 @@ from .render import render
 FORMATS = ("text", "json", "yaml", "csv", "markdown")
 
 
-def serialize(component: Component, format: str, *, details=False, width=80, pins=None) -> str:
+def serialize(
+    component: Component, format: str, *, details=False, width=80, pins=None, show_appearance=True
+) -> str:
     data = {component.id: component.to_dict()}
     if pins is not None:
         # Selected pins have no complete footprint, so use a table on reload.
@@ -29,10 +31,12 @@ def serialize(component: Component, format: str, *, details=False, width=80, pin
         try:
             import yaml
         except ImportError as exc:
-            raise DefinitionError('YAML requires pip install "pinout-cli[yaml]"') from exc
+            raise DefinitionError('YAML requires pip install "pinloom[yaml]"') from exc
         return yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
     if format == "text":
-        return render(component, details=details, width=width, pins=pins)
+        return render(
+            component, details=details, width=width, pins=pins, show_appearance=show_appearance
+        )
     selected = component.pins if pins is None else pins
     if format == "csv":
         output = io.StringIO(newline="")
@@ -83,7 +87,14 @@ def serialize(component: Component, format: str, *, details=False, width=80, pin
                 + " |"
             )
         if details:
-            lines += ["", "```text", render(component, details=True, width=width, pins=pins), "```"]
+            lines += [
+                "",
+                "```text",
+                render(
+                    component, details=True, width=width, pins=pins, show_appearance=show_appearance
+                ),
+                "```",
+            ]
         return "\n".join(lines) + "\n"
     raise DefinitionError(f"unknown format: {format}")
 
@@ -98,7 +109,7 @@ def atomic_write(path: Path, text: str):
             encoding="utf-8",
             newline="\n",
             dir=path.parent,
-            prefix=".pinout-",
+            prefix=".pinloom-",
             delete=False,
         ) as handle:
             temporary = Path(handle.name)

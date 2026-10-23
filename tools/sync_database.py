@@ -7,9 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from pinout_cli.database import Database, definition_files, read_file  # noqa: E402
-from pinout_cli.export import atomic_write  # noqa: E402
-from pinout_cli.models import DefinitionError  # noqa: E402
+from pinloom.database import Database, definition_files, read_file  # noqa: E402
+from pinloom.export import atomic_write  # noqa: E402
+from pinloom.models import DefinitionError  # noqa: E402
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     if not files or any(p.suffix != ".json" for p in files):
         parser.error("source must contain JSON catalog files")
     database = Database()
-    target = ROOT / "pinout_cli" / "data"
+    target = ROOT / "pinloom" / "data"
     for supplement in sorted(target.glob("kicad_*.json")):
         database.merge(read_file(supplement))
     for path in files:
@@ -29,7 +29,7 @@ def main():
             raise DefinitionError(f"duplicate IDs in {path}")
         database.merge(definitions)
     database.reindex()
-    target = ROOT / "pinout_cli" / "data"
+    target = ROOT / "pinloom" / "data"
     for path in files:
         atomic_write(target / path.name, path.read_text(encoding="utf-8-sig"))
     # Remove stale bundled categories only inside the known package data directory.

@@ -1,6 +1,6 @@
-include pinout.py setup.sh setup.ps1 setup.cmd CONTRIBUTING.md
-recursive-include docs *.md *.json *.txt
+include pinloom.py setup.sh setup.ps1 setup.cmd CONTRIBUTING.md
+recursive-include docs *.md *.json *.txt *.svg
 recursive-include examples *.json *.yaml
 recursive-include tools *.py
 recursive-include tests *.py
-recursive-include pinout_cli/data *.json
+recursive-include pinloom/data *.json

@@ -14,7 +14,7 @@ def invoke(tmp_path, *args):
         [
             sys.executable,
             "-m",
-            "pinout_cli",
+            "pinloom",
             *args,
             "--data-dir",
             str(tmp_path / "cache"),
@@ -120,3 +120,13 @@ def test_categories_filter_and_pagination(tmp_path):
 def test_browse_rejects_bad_filters(tmp_path, args):
     result = invoke(tmp_path, *args)
     assert result.returncode == 2 and "Traceback" not in result.stderr
+
+
+def test_picture_controls_and_contrast(tmp_path):
+    text = invoke(tmp_path, "ne555", "--color", "always")
+    assert text.returncode == 0 and "\x1b[1;33mSupply:" in text.stdout
+    assert "PACKAGE APPEARANCE" in text.stdout
+    plain = invoke(tmp_path, "ne555", "--no-color", "--no-art")
+    assert plain.returncode == 0 and "\x1b" not in plain.stdout
+    assert "PACKAGE APPEARANCE" not in plain.stdout
+    assert "Power pins: VCC (8)" in plain.stdout

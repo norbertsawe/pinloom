@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pinout_cli.database import Database
+from pinloom.database import Database
 
 
 @pytest.fixture

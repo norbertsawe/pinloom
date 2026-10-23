@@ -17,8 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from pinout_cli.database import Database, decode  # noqa: E402
-from pinout_cli.models import normalize  # noqa: E402
+from pinloom.database import Database, decode  # noqa: E402
+from pinloom.models import normalize  # noqa: E402
 
 REVISION = "4e17d7595f9691d45d97aea8ad64572652fb5bed"
 SOURCE = f"https://github.com/KiCad/kicad-symbols/blob/{REVISION}"
@@ -209,7 +209,7 @@ def main():
         baseline.merge(decode(json.dumps(records)))
     baseline.reindex()
     for group, records in groups.items():
-        target = ROOT / "pinout_cli/data" / f"kicad_{group}.json"
+        target = ROOT / "pinloom/data" / f"kicad_{group}.json"
         target.write_text(
             json.dumps(records, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )

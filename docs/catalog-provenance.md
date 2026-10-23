@@ -1,7 +1,7 @@
 # Expanded catalog provenance
 
 The original 88 hand-curated records are preserved. The 2,000 added records in
-`pinout_cli/data/kicad_*.json` are adapted from the KiCad community symbol library,
+`pinloom/data/kicad_*.json` are adapted from the KiCad community symbol library,
 revision `4e17d7595f9691d45d97aea8ad64572652fb5bed` (2020-10-02):
 https://github.com/KiCad/kicad-symbols/tree/4e17d7595f9691d45d97aea8ad64572652fb5bed
 
@@ -28,7 +28,7 @@ These records have not each been independently checked against the datasheets.
 git clone https://github.com/KiCad/kicad-symbols.git /tmp/kicad-symbols
 git -C /tmp/kicad-symbols checkout 4e17d7595f9691d45d97aea8ad64572652fb5bed
 python tools/import_kicad.py /tmp/kicad-symbols
-pinout --validate pinout_cli/data
+pinloom --validate pinloom/data
 ```
 
 The script refuses another revision and validates the combined catalog before

@@ -5,9 +5,9 @@ import urllib.error
 
 import pytest
 
-from pinout_cli import update
-from pinout_cli.database import Database, read_file
-from pinout_cli.models import DefinitionError
+from pinloom import update
+from pinloom.database import Database, read_file
+from pinloom.models import DefinitionError
 
 
 def archive(entries):

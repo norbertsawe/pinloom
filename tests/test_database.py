@@ -6,8 +6,8 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from pinout_cli.database import Database, decode, read_file
-from pinout_cli.models import Component, DefinitionError
+from pinloom.database import Database, decode, read_file
+from pinloom.models import Component, DefinitionError
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -51,7 +51,7 @@ def test_offline_first_use_has_requested_families(tmp_path, monkeypatch):
 
 def test_catalog_matches_schema():
     schema = json.loads((ROOT / "docs/component.schema.json").read_text())
-    for file in (ROOT / "pinout_cli/data").glob("*.json"):
+    for file in (ROOT / "pinloom/data").glob("*.json"):
         jsonschema.validate(json.loads(file.read_text(encoding="utf-8")), schema)
     jsonschema.validate(json.loads((ROOT / "examples/custom.json").read_text()), schema)
 

@@ -14,10 +14,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Python 3.10+ with venv is required.' }
 $venvPython = Join-Path $projectRoot '.venv\Scripts\python.exe'
 & $venvPython -m pip install "$projectRoot[yaml]"
 if ($LASTEXITCODE -ne 0) { throw 'Installation failed.' }
-$command = Join-Path $projectRoot '.venv\Scripts\pinout.exe'
+$command = Join-Path $projectRoot '.venv\Scripts\pinloom.exe'
 & $command --version
 if ($LASTEXITCODE -ne 0) { throw 'Installation verification failed.' }
 Write-Host "Installed: $command"
 Write-Host "PowerShell: & '$command' pico -d"
 Write-Host "Command Prompt: `"$command`" pico -d"
-Write-Host "Add '$projectRoot\.venv\Scripts' to your user PATH to run pinout anywhere."
+Write-Host "Add '$projectRoot\.venv\Scripts' to your user PATH to run pinloom anywhere."

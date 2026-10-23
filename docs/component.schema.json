@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "pinout-cli component catalog (v2)",
+  "title": "pinloom component catalog (v2)",
   "type": "object",
   "minProperties": 1,
   "propertyNames": {"pattern": "^[a-z0-9][a-z0-9_-]*$"},

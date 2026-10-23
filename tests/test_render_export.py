@@ -4,10 +4,10 @@ import re
 
 import pytest
 
-from pinout_cli import export
-from pinout_cli.database import decode
-from pinout_cli.export import serialize
-from pinout_cli.render import render
+from pinloom import export
+from pinloom.database import decode
+from pinloom.export import serialize
+from pinloom.render import render
 
 
 @pytest.mark.parametrize("width", [12, 20, 40, 80, 120])
@@ -25,7 +25,7 @@ def test_entire_catalog_fits_width_with_all_pin_numbers(db, width):
 
 def test_dip_orientation_and_colors(db):
     text = render(db.exact("ne555"), color=True, unicode=False, width=100)
-    assert "\x1b[31m" in text and "\x1b[90m" in text
+    assert "\x1b[31m" in text and "\x1b[39m" in text
     stripped = re.sub(r"\x1b\[[0-9;]+m", "", text)
     assert "GND | 1   8 | [PWR] VCC" in stripped
     assert "/RST | 4   5 | [ANA] CONT" in stripped

@@ -4,8 +4,8 @@ import io
 
 import pytest
 
-from pinout_cli.browse import catalog_view, category_view
-from pinout_cli.search import choose, search
+from pinloom.browse import catalog_view, category_view
+from pinloom.search import choose, search
 from tools.import_kicad import REVISION, symbols
 
 
@@ -64,7 +64,7 @@ def test_finder_pages_beyond_first_twelve(db, monkeypatch):
 def test_full_catalog_fits_reloadable_cache(db, tmp_path):
     import json
 
-    from pinout_cli.database import MAX_FILE_BYTES, read_file
+    from pinloom.database import MAX_FILE_BYTES, read_file
 
     path = tmp_path / "database.json"
     path.write_text(

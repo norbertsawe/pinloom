@@ -26,7 +26,7 @@ def decode(text: str, suffix: str = ".json") -> dict[str, Component]:
             try:
                 import yaml
             except ImportError as exc:
-                raise DefinitionError('YAML requires pip install "pinout-cli[yaml]"') from exc
+                raise DefinitionError('YAML requires pip install "pinloom[yaml]"') from exc
 
             class UniqueLoader(yaml.SafeLoader):
                 pass
@@ -114,7 +114,7 @@ class Database:
     @classmethod
     def bundled(cls) -> Database:
         db = cls()
-        for entry in sorted(resources.files("pinout_cli.data").iterdir(), key=lambda p: p.name):
+        for entry in sorted(resources.files("pinloom.data").iterdir(), key=lambda p: p.name):
             if entry.name.endswith(".json"):
                 db.merge(decode(entry.read_text(encoding="utf-8")))
         db.reindex()
