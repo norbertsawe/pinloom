@@ -9,7 +9,7 @@ from typing import Any
 
 from .models import Component, DefinitionError, normalize
 
-MAX_FILE_BYTES = 8 * 1024 * 1024
+MAX_FILE_BYTES = 32 * 1024 * 1024
 
 
 def decode(text: str, suffix: str = ".json") -> dict[str, Component]:

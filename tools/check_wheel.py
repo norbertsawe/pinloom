@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory(prefix="pinout-wheel-") as temporary:
         cwd=directory,
     )
     components = json.loads(result.stdout)
-    assert len(components) >= 80, len(components)
+    assert len(components) >= 2088, len(components)
     subprocess.run(
         [str(python), "-m", "pinout_cli", "pico", "--details", "--ascii"],
         check=True,

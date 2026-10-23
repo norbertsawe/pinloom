@@ -1,7 +1,7 @@
 # pinout-cli
 
 Look up electronic component pinouts from your terminal, even offline.
-Includes **88 components and 1,315 pins**, with diagrams, electrical notes and
+Includes **2,088 components and 39,934 pins**, with diagrams, electrical notes and
 alternate functions for common microcontrollers, boards, ICs and connectors.
 
 Supports **Python 3.10+** on Windows 10/11, Linux and macOS.
@@ -69,6 +69,10 @@ pinout -i esp32                     # Choose a component interactively
 pinout 555                         # Look up an alias
 pinout pico --pin SPI -d            # Filter by pin function
 pinout atmega328p --pin 17 -d       # Inspect a physical pin
+pinout --categories                # See categories and component counts
+pinout --list --category sensors --limit 20
+pinout --search mcp --limit 10
+pinout --list --offset 20 --limit 20 # Browse the next page
 pinout --list                      # List the catalog
 pinout --update                    # Update the cached database
 pinout --help                      # Show all options
@@ -117,15 +121,29 @@ for the schema, examples, loading precedence and update behavior.
 
 ## Component database
 
-The bundled catalog comes from [pinout-pages](https://github.com/norbertsawe/pinout-pages)
-and works immediately offline. `--update` refreshes a separate cache while keeping
-custom definitions intact.
+The original 88 entries come from [pinout-pages](https://github.com/norbertsawe/pinout-pages)
+and work immediately offline. An additional 2,000 package-specific entries are
+adapted from a pinned KiCad symbol library snapshot (2020), bringing the bundled
+catalog to 2,088 components. All entries work offline. `--update` refreshes a
+separate cache while keeping custom definitions intact.
 
 Coverage includes Arduino Uno/Nano, ATmega328P, ESP32/S3/C3, ESP8266, Blue Pill,
 NUCLEO-F401RE, Pico/RP2040, 555 timers, 74HC logic, LM358/NE5532 amplifiers,
 MCP23017, PCM5102A, ADCs/DACs, USB connectors, Raspberry Pi GPIO and SWD/JTAG/ICSP.
-Browse the [complete catalog](https://github.com/norbertsawe/pinout-pages/blob/main/CATALOG.md)
-for all supported packages and source references.
+Browse the [original catalog](https://github.com/norbertsawe/pinout-pages/blob/main/CATALOG.md)
+for the original packages and source references. Use `pinout --categories` or
+`pinout --list --format json` for the complete installed catalog.
+
+Text listings show descriptions, categories, pin counts and packages, with a
+20-result default in terminals. Pipes and JSON retain the full list unless
+`--limit` is supplied. Combine `--category`, `--search`, `--limit` and `--offset`
+to browse. The interactive finder supports `n`/`p` for next/previous pages.
+
+Imported entries preserve symbol pin labels and electrical types, with physical
+pad numbers shown in logical tables. They do not include independently verified
+supply ratings or every multiplexed function. `pinout COMPONENT -d` shows the
+source links and import notes. See [catalog provenance](docs/catalog-provenance.md)
+for reproduction instructions and data licensing.
 
 Each entry identifies its package or board revision and pin orientation.
 Other packages and clone boards may differ; use the linked reference for design

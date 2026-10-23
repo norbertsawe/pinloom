@@ -1,5 +1,5 @@
 include pinout.py setup.sh setup.ps1 setup.cmd CONTRIBUTING.md
-recursive-include docs *.md *.json
+recursive-include docs *.md *.json *.txt
 recursive-include examples *.json *.yaml
 recursive-include tools *.py
 recursive-include tests *.py

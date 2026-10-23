@@ -2,8 +2,10 @@
 
 from difflib import SequenceMatcher
 
+from . import terminal
 from .database import Database
 from .models import Component, clean, normalize
+from .render import wrapped
 
 
 def search(db: Database, query: str, limit: int | None = None) -> list[Component]:
@@ -38,18 +40,40 @@ def search(db: Database, query: str, limit: int | None = None) -> list[Component
 
 def choose(db: Database, query: str, output) -> Component | None:
     """Line-based fuzzy finder for cmd.exe, PowerShell and POSIX terminals."""
+
+    def write_line(text):
+        output.write("\n".join(wrapped(text, terminal.width())) + "\n")
+
+    page = 0
+    page_size = 12
     while True:
-        candidates = search(db, query, 20)
-        output.write(f"\nMatches for {clean(query) or '(all components)'}:\n")
+        all_candidates = search(db, query)
+        start = page * page_size
+        candidates = all_candidates[start : start + page_size]
+        output.write("\n")
+        write_line(
+            f"Matches for {clean(query) or '(all components)'} "
+            f"({len(all_candidates)} results, page {page + 1}):"
+        )
         for index, component in enumerate(candidates, 1):
-            output.write(f"  {index:2}. {component.id} - {component.name}\n")
+            write_line(
+                f"  {index:2}. {component.id} - {component.package} ({len(component.pins)} pins)"
+            )
+        write_line("n next | p previous | new query | q quit")
         output.flush()
         try:
-            answer = input("Number, new search, or q to cancel: ").strip()
+            answer = input("Select: ").strip()
         except EOFError:
             return None
         if answer.casefold() in {"q", "quit", "exit"}:
             return None
+        if answer.casefold() == "n":
+            if start + page_size < len(all_candidates):
+                page += 1
+            continue
+        if answer.casefold() == "p":
+            page = max(0, page - 1)
+            continue
         if answer.isdigit() and 1 <= int(answer) <= len(candidates):
             return candidates[int(answer) - 1]
         if answer:
@@ -57,3 +81,4 @@ def choose(db: Database, query: str, output) -> Component | None:
             if match:
                 return match
             query = answer
+            page = 0

@@ -87,3 +87,36 @@ def test_noninteractive_no_args_lists_without_cache(tmp_path):
     result = invoke(tmp_path)
     assert result.returncode == 0 and "atmega328p" in result.stdout
     assert not (tmp_path / "cache").exists()
+
+
+def test_categories_filter_and_pagination(tmp_path):
+    result = invoke(tmp_path, "--categories", "--format", "json")
+    categories = json.loads(result.stdout)
+    assert result.returncode == 0 and sum(categories.values()) == 2088
+    assert categories["sensors"] == 193
+    first = invoke(tmp_path, "--list", "--category", "sensors", "--limit", "2", "--format", "json")
+    second = invoke(
+        tmp_path,
+        "--list",
+        "--category",
+        "sensors",
+        "--limit",
+        "2",
+        "--offset",
+        "2",
+        "--format",
+        "json",
+    )
+    a, b = json.loads(first.stdout), json.loads(second.stdout)
+    assert len(a) == len(b) == 2
+    assert not ({c["id"] for c in a} & {c["id"] for c in b})
+    text = invoke(tmp_path, "--list", "--category", "sensors", "--limit", "2", "--width", "40")
+    assert "of 193" in text.stdout
+    assert max(map(len, text.stdout.splitlines())) <= 40
+    assert "\x1b" not in text.stdout
+
+
+@pytest.mark.parametrize("args", [("--limit", "0"), ("--offset", "-1"), ("--category", "missing")])
+def test_browse_rejects_bad_filters(tmp_path, args):
+    result = invoke(tmp_path, *args)
+    assert result.returncode == 2 and "Traceback" not in result.stderr

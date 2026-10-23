@@ -18,7 +18,7 @@ def test_offline_first_use_has_requested_families(tmp_path, monkeypatch):
 
     monkeypatch.setattr(urllib.request, "urlopen", no_network)
     db = Database.load(tmp_path / "data", tmp_path / "config")
-    assert len(db.components) >= 80
+    assert len(db.components) >= 2088
     for key in (
         "atmega328p",
         "uno",

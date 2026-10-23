@@ -20,6 +20,9 @@ def main():
     if not files or any(p.suffix != ".json" for p in files):
         parser.error("source must contain JSON catalog files")
     database = Database()
+    target = ROOT / "pinout_cli" / "data"
+    for supplement in sorted(target.glob("kicad_*.json")):
+        database.merge(read_file(supplement))
     for path in files:
         definitions = read_file(path)
         if database.components.keys() & definitions.keys():
@@ -32,7 +35,7 @@ def main():
     # Remove stale bundled categories only inside the known package data directory.
     names = {p.name for p in files}
     for path in target.glob("*.json"):
-        if path.name not in names:
+        if path.name not in names and not path.name.startswith("kicad_"):
             path.unlink()
     print(f"Bundled {len(database.components)} components from {args.source}")
 

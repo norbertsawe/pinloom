@@ -13,7 +13,7 @@ def test_fuzzy_and_partial_search(db):
     assert search(db, "atmeg328p")[0].id == "atmega328p"
     matches = search(db, "esp32")
     assert matches[0].id == "esp32"
-    assert {c.id for c in matches} == {"esp32", "esp32s3", "esp32c3"}
+    assert {c.id for c in matches} >= {"esp32", "esp32s3", "esp32c3"}
     assert search(db, "555")[0].id == "ne555"
     assert search(db, "zxqzzqzxqz") == []
 

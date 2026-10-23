@@ -1,8 +1,9 @@
 # Component definitions
 
 The authoritative catalog lives in [pinout-pages](https://github.com/norbertsawe/pinout-pages).
-Its `database/*.json` files map stable component IDs to records. The CLI packages a
-validated snapshot in `pinout_cli/data`, so fresh installations work offline.
+Its `database/*.json` files map stable component IDs to records. The CLI also
+bundles 2,000 supplemental KiCad-derived entries; see [provenance](catalog-provenance.md).
+The CLI packages a validated snapshot in `pinout_cli/data`, so fresh installations work offline.
 Use `python tools/sync_database.py ../pinout-pages/database` to refresh that snapshot
 after reviewing database changes. Ordinary lookup never accesses the network.
 
