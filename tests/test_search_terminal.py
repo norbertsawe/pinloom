@@ -106,7 +106,11 @@ def test_rename_keeps_legacy_paths_until_new_paths_exist(tmp_path, monkeypatch):
     old_data = tmp_path / "data" / "pinout"
     old_config.mkdir(parents=True)
     old_data.mkdir(parents=True)
-    with patch.object(paths.sys, "platform", "linux"), patch.object(paths.os, "name", "posix"):
+    with (
+        patch.object(paths.sys, "platform", "linux"),
+        patch.object(paths.os, "name", "posix"),
+        patch.object(paths, "Path", type(tmp_path)),
+    ):
         assert paths.config_dir() == old_config
         assert paths.data_dir() == old_data
         new_config = tmp_path / "config" / "pinloom"
