@@ -16,6 +16,10 @@ def normalize(value: str) -> str:
 
 
 def clean(value: str) -> str:
+    # Catalog labels are usually already printable; scan them in C rather than
+    # rebuilding every string character by character on each CLI invocation.
+    if not value or value.isprintable():
+        return value
     value = re.sub(r"\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)", "", value)
     value = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", value)
     return "".join(c for c in value if c in "\n\t" or (c.isprintable() and c != "\x1b"))

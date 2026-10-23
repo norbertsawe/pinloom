@@ -132,3 +132,22 @@ def test_new_environment_names_take_precedence_over_legacy(tmp_path, monkeypatch
     monkeypatch.setenv("PINLOOM_DATA_DIR", str(tmp_path / "new-data"))
     assert paths.config_dir() == tmp_path / "new-config"
     assert paths.data_dir() == tmp_path / "new-data"
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Printable GPIO_1 /RESET", "Printable GPIO_1 /RESET"),
+        ("温度 μA", "温度 μA"),
+        ("", ""),
+        ("a\n\tb", "a\n\tb"),
+        ("\x1b[31mVCC\x1b[0m", "VCC"),
+        ("\x1b]8;;https://example.com\x1b\\LINK\x1b]8;;\x1b\\", "LINK"),
+        ("a\x00\x07\x1bb", "ab"),
+        ("a\u200bb", "ab"),
+    ],
+)
+def test_fast_text_cleaning_preserves_unicode_and_removes_terminal_controls(text, expected):
+    from pinloom.models import clean
+
+    assert clean(text) == expected
