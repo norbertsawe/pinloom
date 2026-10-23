@@ -1,23 +1,32 @@
-param([string]$PythonExe = '')
+param(
+    [string]$PythonExe = '',
+    [switch]$NoPath,
+    [switch]$NoYaml,
+    [string]$InstallDir = '',
+    [string]$BinDir = ''
+)
 $ErrorActionPreference = 'Stop'
-$projectRoot = $PSScriptRoot
-if (-not $PythonExe) {
-    if (Get-Command py -ErrorAction SilentlyContinue) {
-        & py -3 -m venv (Join-Path $projectRoot '.venv')
-    } else {
-        & python -m venv (Join-Path $projectRoot '.venv')
-    }
+$installer = Join-Path $PSScriptRoot 'tools\install.py'
+$installArgs = @()
+if ($NoPath) { $installArgs += '--no-path' }
+if ($NoYaml) { $installArgs += '--no-yaml' }
+if ($InstallDir) { $installArgs += @('--install-dir', $InstallDir) }
+if ($BinDir) { $installArgs += @('--bin-dir', $BinDir) }
+if ($PythonExe) {
+    & $PythonExe $installer @installArgs
+} elseif (Get-Command py -ErrorAction SilentlyContinue) {
+    & py -3 $installer @installArgs
+} elseif (Get-Command python -ErrorAction SilentlyContinue) {
+    & python $installer @installArgs
 } else {
-    & $PythonExe -m venv (Join-Path $projectRoot '.venv')
+    throw 'Python 3.10+ is required. Install Python from python.org, then rerun setup.cmd.'
 }
-if ($LASTEXITCODE -ne 0) { throw 'Python 3.10+ with venv is required.' }
-$venvPython = Join-Path $projectRoot '.venv\Scripts\python.exe'
-& $venvPython -m pip install "$projectRoot[yaml]"
-if ($LASTEXITCODE -ne 0) { throw 'Installation failed.' }
-$command = Join-Path $projectRoot '.venv\Scripts\pinloom.exe'
-& $command --version
-if ($LASTEXITCODE -ne 0) { throw 'Installation verification failed.' }
-Write-Host "Installed: $command"
-Write-Host "PowerShell: & '$command' pico -d"
-Write-Host "Command Prompt: `"$command`" pico -d"
-Write-Host "Add '$projectRoot\.venv\Scripts' to your user PATH to run pinloom anywhere."
+if ($LASTEXITCODE -ne 0) { throw 'Pinloom installation failed; see the error above.' }
+if (-not $NoPath) {
+    $base = $env:LOCALAPPDATA
+    if (-not $base) { $base = Join-Path $HOME 'AppData\Local' }
+    $commandDir = Join-Path $base 'Pinloom\bin'
+    if ($BinDir) { $commandDir = (Resolve-Path $BinDir).Path }
+    if (($env:Path -split ';') -notcontains $commandDir) { $env:Path = "$commandDir;$env:Path" }
+}
+Write-Host 'Ready. Run pinloom --version, or open a new terminal if setup was launched in a child process.'

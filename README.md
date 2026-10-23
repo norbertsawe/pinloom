@@ -38,46 +38,120 @@ Note: Decouple the supply close to the IC. RESET is active low.
 
 ## Installation
 
-Clone the repository:
+You need **Python 3.10 or newer**, Git, and internet access for installation.
+Pinout lookups work offline afterward. Install Python from
+[python.org](https://www.python.org/downloads/) if it is missing. On Debian/Ubuntu,
+`sudo apt install python3-venv` fixes missing `venv`/`ensurepip` support.
+
+Clone the repository once:
 
 ```sh
 git clone https://github.com/norbertsawe/pinloom.git
 cd pinloom
 ```
 
-**Linux / macOS**
+On Windows, use PowerShell or Command Prompt for setup. WSL uses the Linux
+instructions inside WSL. Choose the commands for your terminal below. Setup installs Pinloom in a private
+user environment, exposes only the `pinloom` command, and **adds it to PATH
+automatically for future terminals**. No administrator access or environment
+activation is needed. The extra PATH command in each block makes it available
+immediately in the terminal you are using now.
+
+### Linux and macOS — bash or zsh
 
 ```sh
 bash setup.sh
-./.venv/bin/pinloom pico -d
-```
-Adding it  to path(i.e if you are using zsh)
-```
-echo 'export PATH="$PATH:'"$(pwd)/.venv/bin"'"' >> ~/.zshrc  
+export PATH="$HOME/.local/bin:$PATH"
+pinloom --version
+pinloom ne555
 ```
 
-**Windows PowerShell**
+Setup configures bash, zsh, POSIX login profiles and fish. It respects `ZDOTDIR`
+and `XDG_CONFIG_HOME`. Rerunning it replaces its own marked PATH block without
+duplicating entries or replacing your other settings.
+
+To choose a Python interpreter: `PYTHON=python3.12 bash setup.sh`.
+
+### Linux and macOS — fish
+
+```fish
+bash setup.sh
+fish_add_path "$HOME/.local/bin"
+pinloom --version
+pinloom ne555
+```
+
+### Windows — PowerShell
 
 ```powershell
-.\setup.ps1
-.\.venv\Scripts\pinloom.exe pico -d
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1
+$env:Path = "$env:LOCALAPPDATA\Pinloom\bin;$env:Path"
+pinloom --version
+pinloom ne555
 ```
 
-**Windows Command Prompt**
+This bypass applies only to the setup process; it does not change your saved
+execution policy. Setup adds the command directory to your **user PATH** while
+preserving existing entries. It does not use `setx` or change the machine PATH.
+To choose Python, add `-PythonExe 'C:\Python312\python.exe'` to the setup command.
+
+### Windows — Command Prompt (cmd.exe)
 
 ```bat
 setup.cmd
-.venv\Scripts\pinloom.exe pico -d
+pinloom --version
+pinloom ne555
 ```
 
-The scripts install into `.venv` without administrator privileges. Add `.venv/bin`
-(Linux/macOS) or `.venv\Scripts` (Windows) to your PATH to use `pinloom` anywhere.
-If PowerShell blocks the script, run `setup.cmd`. To choose a Windows interpreter,
-use `.\setup.ps1 -PythonExe 'C:\Python312\python.exe'`.
+`setup.cmd` also refreshes PATH in the current Command Prompt. If you run it from
+another batch file, use `call setup.cmd` so the calling script continues afterward.
 
-Already using [pipx](https://pipx.pypa.io/)? Install from the checkout with
-`pipx install ".[yaml]"`. For a manual installation, create a virtual environment
-and run `python -m pip install ".[yaml]"`. Omit `[yaml]` for JSON-only support.
+### Installation locations
+
+| System | Private Python environment | Command directory added to PATH |
+| --- | --- | --- |
+| Linux | `~/.local/share/pinloom/venv` | `~/.local/bin` |
+| macOS | `~/Library/Application Support/pinloom/venv` | `~/.local/bin` |
+| Windows | `%LOCALAPPDATA%\Pinloom\venv` | `%LOCALAPPDATA%\Pinloom\bin` |
+
+Linux respects `XDG_DATA_HOME` for the private environment. The installed command
+keeps working if you move or remove the checkout; do not move the private
+virtual environment itself. To update, pull the repository changes and rerun setup.
+
+### If the command is still not found
+
+First check that setup finished successfully. Open a new terminal; on Windows,
+fully close and reopen Windows Terminal or VS Code if a new tab still inherits
+an old PATH. You can instead refresh the current terminal with the appropriate
+command below:
+
+| Terminal | Make Pinloom available now | Check the resolved command |
+| --- | --- | --- |
+| bash / zsh | `export PATH="$HOME/.local/bin:$PATH"` | `command -v pinloom` |
+| fish | `fish_add_path "$HOME/.local/bin"` | `type -p pinloom` |
+| PowerShell | `$env:Path = "$env:LOCALAPPDATA\Pinloom\bin;$env:Path"` | `Get-Command pinloom` |
+| Command Prompt | `set "PATH=%LOCALAPPDATA%\Pinloom\bin;%PATH%"` | `where pinloom` |
+
+To repair persistent PATH entries without downloading or reinstalling:
+
+```sh
+# Linux / macOS, from the checkout
+python3 tools/install.py --path-only
+```
+
+```powershell
+# Windows, from the checkout
+py -3 tools\install.py --path-only
+```
+
+If you prefer to manage PATH yourself, use `bash setup.sh --no-path` or
+`.\setup.ps1 -NoPath`. Advanced installs can use `python3 tools/install.py --help`
+(`py -3 tools\install.py --help` on Windows) to choose installation directories
+or omit optional YAML support.
+
+Already using [pipx](https://pipx.pypa.io/)? From the checkout, run
+`pipx install ".[yaml]"`, then `pipx ensurepath`, and open a new terminal.
+This is an alternative to the setup scripts; you only need one installation method.
 
 ## Usage
 
@@ -186,12 +260,12 @@ updates. CI runs checks on Windows, Linux and macOS with Python 3.10, 3.12 and 3
 
 ## Upgrading from pinout-cli
 
-Version 3 renames the distribution, Python module and command to `pinloom`. Install
-from this checkout with `python -m pip install ".[yaml]"` or rerun your platform's
-setup script. Update shell aliases and scripts to call `pinloom` or
-`python -m pinloom`. The old `pinout` executable is not installed by this project.
-If your environment still has this project's old distribution, remove it with
-`python -m pip uninstall pinout-cli` after installing Pinloom.
+Version 3 renames the distribution, Python module and command to `pinloom`.
+Use the setup instructions above to install into a private user environment.
+Update shell aliases and scripts to call `pinloom`. The old `pinout` executable
+is not installed by this project. If you still have this project's old
+`pinout-cli` distribution, uninstall it using its original environment's Python
+after installing Pinloom: `python -m pip uninstall pinout-cli`.
 
 New configuration and cache folders use `pinloom`; `PINLOOM_CONFIG_DIR` and
 `PINLOOM_DATA_DIR` are the preferred overrides. Existing `pinout` folders remain

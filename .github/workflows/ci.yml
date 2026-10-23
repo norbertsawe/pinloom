@@ -19,3 +19,4 @@ jobs:
       - run: python -m pytest -q
       - run: python -m build
       - run: python tools/check_wheel.py
+      - run: python tools/check_install.py

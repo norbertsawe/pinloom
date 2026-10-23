@@ -13,6 +13,7 @@ python -m ruff format --check .
 python -m pytest -q
 python -m build
 python tools/check_wheel.py
+python tools/check_install.py
 ```
 
 Keep parsing, database loading, terminal rendering and CLI handling in their own
@@ -32,3 +33,9 @@ python tools/sync_database.py ../pinout-pages/database
 Report hardware issues with the exact component, package, board revision and source
 reference. Report terminal issues with OS, shell, terminal emulator, Python version,
 encoding, terminal width and whether output was redirected.
+
+Installer changes must preserve existing shell settings and Windows user PATH
+entries, quote directories with spaces and apostrophes, and be safe to rerun.
+`tools/check_install.py` installs from a copied checkout into temporary directories
+without editing your profiles or user PATH, then verifies shell discovery and
+lookup after removing that checkout. CI runs this on each OS/Python combination.
