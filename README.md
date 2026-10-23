@@ -1,10 +1,10 @@
 # Pinloom
 
-Look up electronic component pinouts from your terminal, even offline.
-Includes **2,088 components and 39,934 pins**, with diagrams, electrical notes and
-alternate functions for common microcontrollers, boards, ICs and connectors.
+Look up a chip, board, or connector right from your terminal. Pinloom comes with
+**2,088 components and 39,934 pins**, plus package sketches, electrical notes,
+and pin functions where available. Once it's installed, you can use it offline too.
 
-Supports **Python 3.10+** on Windows 10/11, Linux and macOS.
+You'll need **Python 3.10+**. It runs on Windows 10/11, Linux, and macOS.
 
 ![Pinloom terminal view with package sketch, contrasting headings and pin grid](docs/preview.svg)
 
@@ -38,24 +38,26 @@ Note: Decouple the supply close to the IC. RESET is active low.
 
 ## Installation
 
-You need **Python 3.10 or newer**, Git, and internet access for installation.
-Pinout lookups work offline afterward. Install Python from
-[python.org](https://www.python.org/downloads/) if it is missing. On Debian/Ubuntu,
-`sudo apt install python3-venv` fixes missing `venv`/`ensurepip` support.
+Before you start, make sure you have **Python 3.10 or newer**, Git, and an internet
+connection. You'll only need the connection for installation and database updates.
+If Python isn't installed yet, grab it from [python.org](https://www.python.org/downloads/).
+On Debian/Ubuntu, run `sudo apt install python3-venv` if setup complains about
+missing `venv` or `ensurepip`.
 
-Clone the repository once:
+Grab the repo first:
 
 ```sh
 git clone https://github.com/norbertsawe/pinloom.git
 cd pinloom
 ```
 
-On Windows, use PowerShell or Command Prompt for setup. WSL uses the Linux
-instructions inside WSL. Choose the commands for your terminal below. Setup installs Pinloom in a private
-user environment, exposes only the `pinloom` command, and **adds it to PATH
-automatically for future terminals**. No administrator access or environment
-activation is needed. The extra PATH command in each block makes it available
-immediately in the terminal you are using now.
+Pick the steps for your terminal below. On Windows, use PowerShell or Command
+Prompt. If you're using WSL, follow the Linux steps inside WSL.
+
+Setup gives Pinloom its own Python environment and **adds the command to PATH
+automatically**. You won't need admin access or have to activate an environment
+every time you use it. The extra PATH line in each block lets you start using
+Pinloom in your current terminal too, without reopening it.
 
 ### Linux and macOS — bash or zsh
 
@@ -66,11 +68,12 @@ pinloom --version
 pinloom ne555
 ```
 
-Setup configures bash, zsh, POSIX login profiles and fish. It respects `ZDOTDIR`
-and `XDG_CONFIG_HOME`. Rerunning it replaces its own marked PATH block without
-duplicating entries or replacing your other settings.
+Setup handles PATH for bash, zsh, POSIX login shells, and fish, including custom
+`ZDOTDIR` and `XDG_CONFIG_HOME` locations. It's fine to run it again; it updates
+its own marked block and leaves your other settings alone.
 
-To choose a Python interpreter: `PYTHON=python3.12 bash setup.sh`.
+If you use a specific Python version, point setup at it:
+`PYTHON=python3.12 bash setup.sh`.
 
 ### Linux and macOS — fish
 
@@ -90,10 +93,12 @@ pinloom --version
 pinloom ne555
 ```
 
-This bypass applies only to the setup process; it does not change your saved
-execution policy. Setup adds the command directory to your **user PATH** while
-preserving existing entries. It does not use `setx` or change the machine PATH.
-To choose Python, add `-PythonExe 'C:\Python312\python.exe'` to the setup command.
+The execution-policy bypass only applies to this setup process. Your saved
+policy stays as it was. Setup adds Pinloom to your **user PATH**, keeps the
+entries already there, and doesn't touch the machine PATH or use `setx`.
+
+If you need a specific Python installation, add
+`-PythonExe 'C:\Python312\python.exe'` to the setup command.
 
 ### Windows — Command Prompt (cmd.exe)
 
@@ -103,8 +108,9 @@ pinloom --version
 pinloom ne555
 ```
 
-`setup.cmd` also refreshes PATH in the current Command Prompt. If you run it from
-another batch file, use `call setup.cmd` so the calling script continues afterward.
+`setup.cmd` refreshes PATH in this window too, so you can use Pinloom straight
+away. If you're running setup from another batch file, use `call setup.cmd`
+so that script carries on afterward.
 
 ### Installation locations
 
@@ -114,16 +120,19 @@ another batch file, use `call setup.cmd` so the calling script continues afterwa
 | macOS | `~/Library/Application Support/pinloom/venv` | `~/.local/bin` |
 | Windows | `%LOCALAPPDATA%\Pinloom\venv` | `%LOCALAPPDATA%\Pinloom\bin` |
 
-Linux respects `XDG_DATA_HOME` for the private environment. The installed command
-keeps working if you move or remove the checkout; do not move the private
-virtual environment itself. To update, pull the repository changes and rerun setup.
+On Linux, setup uses `XDG_DATA_HOME` if you've set it. You can move or delete
+the cloned repo after installing; Pinloom will keep working. Just leave its
+private Python environment where it is.
+
+To update Pinloom, pull the latest changes and run setup again.
 
 ### If the command is still not found
 
-First check that setup finished successfully. Open a new terminal; on Windows,
-fully close and reopen Windows Terminal or VS Code if a new tab still inherits
-an old PATH. You can instead refresh the current terminal with the appropriate
-command below:
+Check that setup finished without errors, then try a new terminal. On Windows,
+you might need to close and reopen Windows Terminal or VS Code completely;
+a new tab can still pick up the old PATH.
+
+You can also refresh PATH right in the terminal you're using:
 
 | Terminal | Make Pinloom available now | Check the resolved command |
 | --- | --- | --- |
@@ -132,7 +141,8 @@ command below:
 | PowerShell | `$env:Path = "$env:LOCALAPPDATA\Pinloom\bin;$env:Path"` | `Get-Command pinloom` |
 | Command Prompt | `set "PATH=%LOCALAPPDATA%\Pinloom\bin;%PATH%"` | `where pinloom` |
 
-To repair persistent PATH entries without downloading or reinstalling:
+If PATH still needs fixing, these commands repair it for future terminals.
+They won't download or reinstall anything:
 
 ```sh
 # Linux / macOS, from the checkout
@@ -144,14 +154,14 @@ python3 tools/install.py --path-only
 py -3 tools\install.py --path-only
 ```
 
-If you prefer to manage PATH yourself, use `bash setup.sh --no-path` or
-`.\setup.ps1 -NoPath`. Advanced installs can use `python3 tools/install.py --help`
-(`py -3 tools\install.py --help` on Windows) to choose installation directories
-or omit optional YAML support.
+If you'd rather manage PATH yourself, use `bash setup.sh --no-path` or
+`.\setup.ps1 -NoPath`. Run `python3 tools/install.py --help`
+(`py -3 tools\install.py --help` on Windows) for options like choosing a different
+install location or leaving out YAML support.
 
-Already using [pipx](https://pipx.pypa.io/)? From the checkout, run
-`pipx install ".[yaml]"`, then `pipx ensurepath`, and open a new terminal.
-This is an alternative to the setup scripts; you only need one installation method.
+If you already use [pipx](https://pipx.pypa.io/), you can use that instead.
+From the repo, run `pipx install ".[yaml]"`, then `pipx ensurepath`, and open
+a new terminal. Pick whichever install method suits you; you don't need both.
 
 ## Usage
 
@@ -172,26 +182,34 @@ pinloom --update                    # Update the cached database
 pinloom --help                      # Show all options
 ```
 
-Names and aliases ignore case and punctuation. Partial or misspelled names open
-an interactive finder in a terminal: choose a number, enter a new search, or press
-`q` to cancel. Scripts and redirected output never prompt; ambiguous queries
-return suggestions. Use `--no-interactive` to disable prompts explicitly.
+You don't have to get the name exactly right. Names and aliases ignore case
+and punctuation, and partial names or typos open a finder in your terminal.
+Pick a number, try another search, or press `q` to leave.
 
-Package silhouettes appear above the pinout for recognized IC, transistor,
-board and connector packages. They are simplified illustrations, with no physical
-pin assignments; use the pin grid and datasheet for wiring. Unknown packages or
-very narrow windows omit the picture. `--no-art` hides pictures explicitly.
+When you're piping output or running a script, Pinloom gives you suggestions
+instead of stopping for input. You can also use `--no-interactive` to turn
+prompts off yourself.
 
-Bold headings, supply highlighting and semantic pin colors make key information
-easier to scan. Power and ground connections, electrical characteristics and
-existing connection restrictions appear below the grid. `-d` adds every pin's
-functions and notes. No electrical limits are guessed for imported components.
+For supported IC, transistor, board, and connector packages, you'll see a little
+package sketch above the pinout. It's there to help you recognize the shape;
+use the pin grid and datasheet when wiring things up. The sketches simplify
+lead positions and counts. If the package isn't recognized or your terminal
+is too narrow, Pinloom skips the picture. Use `--no-art` to hide it yourself.
 
-Diagrams label power, ground, I/O, analog, interface, control and unused pins.
-Narrow terminals show a complete vertical list. Use `--ascii` for ASCII borders,
-`--width 40` to override terminal sizing, or `--no-color` for plain output.
-`NO_COLOR` is supported, and piped output is plain by default. Run a query again
-after resizing to reflow its output.
+Headings, supply information, and pin types have their own contrast and colors
+to make the important bits easier to spot. Below the grid, you'll find power
+and ground connections, electrical details, and any connection restrictions
+recorded in the catalog. Add `-d` for every pin's functions and notes.
+For imported components, check the datasheet for electrical limits.
+
+The labels cover power, ground, I/O, analog, interface, control, and unused pins.
+On a narrow terminal, the grid becomes a vertical list so you can still read
+all the pin names.
+
+Use `--ascii` for simple borders, `--width 40` to set the output width, or
+`--no-color` for plain text. Pinloom also respects `NO_COLOR`, and piped output
+is plain by default. If you resize your terminal, run the command again to fit
+the new width.
 
 ## Exports and custom pinouts
 
@@ -205,13 +223,16 @@ pinloom --validate examples/custom.json
 pinloom --custom examples/custom.yaml my-sensor -d
 ```
 
-Exports support **text, JSON, YAML, CSV and Markdown**. The file extension selects
-the format; `--format` overrides it. JSON/YAML exports can be loaded as custom
-components. `--pin` can also limit an export to selected pins.
+You can export to **text, JSON, YAML, CSV, or Markdown**. Pinloom picks the format
+from the file extension, or you can choose one with `--format`. Use `--pin` if
+you only need certain pins in the export.
 
-Place JSON/YAML definitions in your config directory's `components` subdirectory
-for automatic loading. Run `pinloom --about` to see your paths, or use
-`--config-dir` and `--data-dir` to override them.
+JSON and YAML exports can be loaded back in as custom components too.
+
+To keep your own pinouts handy, drop their JSON or YAML files into the
+`components` folder inside your config directory. Pinloom will load them
+automatically. Run `pinloom --about` to see where it looks, or choose your own
+locations with `--config-dir` and `--data-dir`.
 
 | Platform | Config | Cache |
 | --- | --- | --- |
@@ -219,57 +240,73 @@ for automatic loading. Run `pinloom --about` to see your paths, or use
 | Linux | `~/.config/pinloom` | `~/.local/share/pinloom` |
 | macOS | `~/Library/Application Support/pinloom` | Config directory's `data` subdirectory |
 
-Linux also respects `XDG_CONFIG_HOME` and `XDG_DATA_HOME`. All platforms support
-`PINLOOM_CONFIG_DIR` and `PINLOOM_DATA_DIR`. See the [database guide](docs/database.md)
-for the schema, examples, loading precedence and update behavior.
+On Linux, you can also set `XDG_CONFIG_HOME` and `XDG_DATA_HOME`. The
+`PINLOOM_CONFIG_DIR` and `PINLOOM_DATA_DIR` overrides work on every supported OS.
+The [database guide](docs/database.md) has the file format, examples, and details
+on which definitions take priority and how updates work.
 
 ## Component database
 
-The original 88 entries come from [pinout-pages](https://github.com/norbertsawe/pinout-pages)
-and work immediately offline. An additional 2,000 package-specific entries are
-adapted from a pinned KiCad symbol library snapshot (2020), bringing the bundled
-catalog to 2,088 components. All entries work offline. `--update` refreshes a
-separate cache while keeping custom definitions intact.
+The original 88 entries come from
+[pinout-pages](https://github.com/norbertsawe/pinout-pages). The catalog also
+includes 2,000 package-specific entries adapted from a fixed 2020 snapshot
+of KiCad's symbol library. That's **2,088 components**, all available offline
+from the first run.
 
-Coverage includes Arduino Uno/Nano, ATmega328P, ESP32/S3/C3, ESP8266, Blue Pill,
+`--update` refreshes the downloaded database cache and leaves your custom
+pinouts alone.
+
+You'll find Arduino Uno/Nano, ATmega328P, ESP32/S3/C3, ESP8266, Blue Pill,
 NUCLEO-F401RE, Pico/RP2040, 555 timers, 74HC logic, LM358/NE5532 amplifiers,
-MCP23017, PCM5102A, ADCs/DACs, USB connectors, Raspberry Pi GPIO and SWD/JTAG/ICSP.
-Browse the [original catalog](https://github.com/norbertsawe/pinout-pages/blob/main/CATALOG.md)
-for the original packages and source references. Use `pinloom --categories` or
-`pinloom --list --format json` for the complete installed catalog.
+MCP23017, PCM5102A, ADCs/DACs, USB connectors, Raspberry Pi GPIO, and SWD/JTAG/ICSP,
+among others.
 
-Text listings show descriptions, categories, pin counts and packages, with a
-20-result default in terminals. Pipes and JSON retain the full list unless
-`--limit` is supplied. Combine `--category`, `--search`, `--limit` and `--offset`
-to browse. The interactive finder supports `n`/`p` for next/previous pages.
+The [original catalog](https://github.com/norbertsawe/pinout-pages/blob/main/CATALOG.md)
+lists the first set of packages and their sources. For everything in your
+installed version, use `pinloom --categories` or `pinloom --list --format json`.
 
-Imported entries preserve symbol pin labels and electrical types, with physical
-pad numbers shown in logical tables. They do not include independently verified
-supply ratings or every multiplexed function. `pinloom COMPONENT -d` shows the
-source links and import notes. See [catalog provenance](docs/catalog-provenance.md)
-for reproduction instructions and data licensing.
+Listings show a description, category, pin count, and package for each component.
+In a terminal, you'll get 20 results at a time. Pipes and JSON give you the full
+list unless you set `--limit`. Mix `--category`, `--search`, `--limit`, and
+`--offset` to narrow things down. In the interactive finder, `n` and `p` take
+you to the next and previous pages.
 
-Each entry identifies its package or board revision and pin orientation.
-Other packages and clone boards may differ; use the linked reference for design
-limits and footprint dimensions.
+The imported entries keep KiCad's pin labels and electrical types. Their tables
+use physical pad numbers; they aren't footprint drawings. The imports haven't
+each been independently checked against manufacturer datasheets. You'll still
+need the datasheet for supply limits and the full list of alternate functions.
+
+Use `pinloom COMPONENT -d` to see the source links and import notes. The
+[catalog provenance notes](docs/catalog-provenance.md) explain where the data
+comes from, how to reproduce the import, and how it's licensed.
+
+Check the package or board revision before you wire anything up. A different
+package or clone board can have a different pinout. The linked datasheet or
+schematic is the place to confirm orientation, electrical limits, and footprint
+dimensions.
 
 ## Development
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, packaging and database
-updates. CI runs checks on Windows, Linux and macOS with Python 3.10, 3.12 and 3.14.
+If you'd like to work on Pinloom, [CONTRIBUTING.md](CONTRIBUTING.md) covers
+setup, tests, packaging, and database updates. CI checks Windows, Linux, and
+macOS with Python 3.10, 3.12, and 3.14.
 
 ## Upgrading from pinout-cli
 
-Version 3 renames the distribution, Python module and command to `pinloom`.
-Use the setup instructions above to install into a private user environment.
-Update shell aliases and scripts to call `pinloom`. The old `pinout` executable
-is not installed by this project. If you still have this project's old
-`pinout-cli` distribution, uninstall it using its original environment's Python
-after installing Pinloom: `python -m pip uninstall pinout-cli`.
+If you used pinout-cli before, the package, Python module, and command are now
+called `pinloom`. Follow the setup steps above, then update any aliases or
+scripts that still call `pinout`.
 
-New configuration and cache folders use `pinloom`; `PINLOOM_CONFIG_DIR` and
-`PINLOOM_DATA_DIR` are the preferred overrides. Existing `pinout` folders remain
-readable until a new folder exists, and `PINOUT_CONFIG_DIR` / `PINOUT_DATA_DIR`
-remain accepted for migration. New environment variables take precedence. No
-files are moved or deleted automatically. `pinloom --about` shows the active paths.
-The separately maintained `pinout-pages` database keeps its existing URL.
+Once Pinloom is installed, you can remove this project's old `pinout-cli`
+package with `python -m pip uninstall pinout-cli`. Use the Python interpreter
+from that old installation's environment. Pinloom doesn't install the old
+`pinout` command.
+
+New config and cache folders use the `pinloom` name. If you still have the old
+`pinout` folders, Pinloom can read them until the new ones exist. The old
+`PINOUT_CONFIG_DIR` and `PINOUT_DATA_DIR` variables still work for migration,
+but `PINLOOM_CONFIG_DIR` and `PINLOOM_DATA_DIR` take priority when both are set.
+
+Your files won't be moved or deleted automatically. Run `pinloom --about` to
+check which paths are being used. The separate `pinout-pages` database still
+lives at its existing URL.
